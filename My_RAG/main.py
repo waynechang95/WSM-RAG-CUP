@@ -5,10 +5,9 @@ from retriever import create_retriever
 from generator import generate_answer
 import argparse
 
-def main(query_path, language, output_path):
+def main(query_path, docs_path, language, output_path):
     # 1. Load Data
     print("Loading documents...")
-    docs_path = './dragonball_dataset/dragonball_docs.jsonl'
     docs_for_chunking = load_jsonl(docs_path)
     queries = load_jsonl(query_path)
     print(f"Loaded {len(docs_for_chunking)} documents.")
@@ -28,12 +27,12 @@ def main(query_path, language, output_path):
     for query in tqdm(queries, desc="Processing Queries"):
         # 4. Retrieve relevant chunks
         query_text = query['query']['content']
-        print(f"\nRetrieving chunks for query: '{query_text}'")
-        retrieved_chunks = retriever.retrieve(query_text)
-        print(f"Retrieved {len(retrieved_chunks)} chunks.")
+        # print(f"\nRetrieving chunks for query: '{query_text}'")
+        retrieved_chunks = retriever.retrieve(query_text, top_k=3)
+        # print(f"Retrieved {len(retrieved_chunks)} chunks.")
 
         # 5. Generate Answer
-        print("Generating answer...")
+        # print("Generating answer...")
         answer = generate_answer(query_text, retrieved_chunks)
 
         query["prediction"]["content"] = answer
@@ -45,7 +44,8 @@ def main(query_path, language, output_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--query_path', help='Path to the query file')
+    parser.add_argument('--docs_path', help='Path to the documents file')
     parser.add_argument('--language', help='Language to filter queries (zh or en), if not specified, process all')
     parser.add_argument('--output', help='Path to the output file')
     args = parser.parse_args()
-    main(args.query_path, args.language, args.output)
+    main(args.query_path, args.docs_path, args.language, args.output)
