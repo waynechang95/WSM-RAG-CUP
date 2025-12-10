@@ -2,7 +2,7 @@ from tqdm import tqdm
 from utils import load_jsonl, save_jsonl
 from chunker import chunk_documents
 from retriever import create_retriever
-from generator import generate_answer
+from generator import generate_answer_en, generate_answer_zh
 import argparse
 
 def main(query_path, docs_path, language, output_path):
